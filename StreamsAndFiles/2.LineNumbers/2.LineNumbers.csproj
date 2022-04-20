@@ -1,0 +1,15 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <RootNamespace>_2.LineNumbers</RootNamespace>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="data.txt\**" />
+    <EmbeddedResource Remove="data.txt\**" />
+    <None Remove="data.txt\**" />
+  </ItemGroup>
+
+</Project>
