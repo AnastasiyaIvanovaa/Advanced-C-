@@ -7,92 +7,82 @@ namespace _7.KnightGame
         static void Main(string[] args)
         {
             int n = int.Parse(Console.ReadLine());
-            char[,] board = new char[n, n];
-
-            for (int row = 0; row < n; row++)
+            string[,] chess = new string[n, n];
+            for (int i = 0; i < chess.GetLength(0); i++)
             {
-                char[] inputData = Console.ReadLine().ToCharArray();
-
-                for (int col = 0; col < n; col++)
+                string input = Console.ReadLine();
+                for (int j = 0; j < chess.GetLength(1); j++)
                 {
-                    board[row, col] = inputData[col];
+                    chess[i, j] = input[j].ToString();
                 }
             }
 
+            int count = 0;
+
             while (true)
             {
-                int maxAttackedKnightsCount = 0;
-                int row = -1;
-                int col = -1;
-
+                int row = 0;
+                int col = 0;
+                int maxAttack = 0;
                 for (int i = 0; i < n; i++)
                 {
                     for (int j = 0; j < n; j++)
                     {
-                        char symbol = board[i, j];
-                        if (symbol!='K')
+                        int attack = 0;
+                        if (chess[i, j] == "K")
                         {
-                            continue;
+                            if (i - 1 >= 0 && j - 2 > 0 && chess[i - 1, j - 2] == "K")
+                            {
+                                attack++;
+                            }
+                            if (i - 2 >= 0 && j - 1 >= 0 && chess[i - 2, j - 1] == "K")
+                            {
+                                attack++;
+                            }
+                            if (i - 2 >= 0 && j + 1 < n && chess[i - 2, j + 1] == "K")
+                            {
+                                attack++;
+                            }
+                            if (i - 1 >= 0 && j + 2 < n && chess[i - 1, j + 2] == "K")
+                            {
+                                attack++;
+                            }
+                            if (i + 1 < n && j + 2 < n && chess[i + 1, j + 2] == "K")
+                            {
+                                attack++;
+                            }
+                            if (i + 2 < n && j + 1 < n && chess[i + 2, j + 1] == "K")
+                            {
+                                attack++;
+                            }
+                            if (i + 2 < n && j - 1 >= 0 && chess[i + 2, j - 1] == "K")
+                            {
+                                attack++;
+                            }
+                            if (i + 1 < n && j - 2 >= 0 && chess[i + 1, j - 2] == "K")
+                            {
+                                attack++;
+                            }
                         }
-                        int count = GetCountOfAttackedKnights(board,row, col);
+                        if (attack > maxAttack)
+                        {
+                            maxAttack = attack;
+                            row = i;
+                            col = j;
+                        }
                     }
                 }
+                if (maxAttack != 0)
+                {
+                    chess[row, col] = "0";
+                    count++;
+                }
+                else
+                {
+                    break;
+                }
             }
-
-            //
-        }
-
-        private static int GetCountOfAttackedKnights(char[,] board,int row, int col)
-        {
-            int count = 0;
-
-            if (ContainsKnight(board,row-2,col-1))
-            {
-                count++;
-            }
-            if (ContainsKnight(board, row - 2, col +1))
-            {
-                count++;
-            }
-            if (ContainsKnight(board, row -1, col - 2))
-            {
-                count++;
-            }
-            if (ContainsKnight(board, row - 1, col +2))
-            {
-                count++;
-            }
-            if (ContainsKnight(board, row +1, col - 2))
-            {
-                count++;
-            }
-            if (ContainsKnight(board, row +1, col +2))
-            {
-                count++;
-            }
-            if (ContainsKnight(board, row + 2, col - 1))
-            {
-                count++;
-            }
-            if (ContainsKnight(board, row + 2, col + 1))
-            {
-                count++;
-            }
-            return count;
-        }
-
-        private static bool ContainsKnight(char[,] board, int row, int col)
-        {
-            if (!isValidCell(row,col,board.GetLength(0)))
-            {
-                return false;
-            }
-            return board[row, col] == 'K';
-        }
-
-        private static bool isValidCell(int row, int col, int length)
-        {
-            return row >= 0 && row < length && col >= 0 && col < length;
+                Console.WriteLine(count);
         }
     }
 }
