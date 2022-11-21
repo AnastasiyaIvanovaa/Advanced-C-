@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 
 namespace _10.RadioactiveMutantVampireBunnies
@@ -8,162 +7,197 @@ namespace _10.RadioactiveMutantVampireBunnies
     {
         static void Main(string[] args)
         {
-            int[] dimentions = Console.ReadLine().Split().Select(int.Parse).ToArray();
-            int n = dimentions[0];
-            int m = dimentions[1];
+            int[] n = Console.ReadLine().Split().Select(int.Parse).ToArray();
+            int row = n[0];
+            int col = n[1];
+            string[,] array = new string[row, col];
+            int playerRow = 0;
+            int playerCol = 0;
 
-            char[,] field = new char[n, m];
-            int playerRow = -1;
-            int playerCol = -1;
-
-            for (int row = 0; row < n; row++)
+            for (int i = 0; i < array.GetLength(0); i++)
             {
-                char[] rowData = Console.ReadLine().ToCharArray();
-                for (int col = 0; col < m; col++)
+                string data = Console.ReadLine();
+                for (int j = 0; j < array.GetLength(1); j++)
                 {
-                    field[row, col] = rowData[col];
-                    if (field[row, col] == 'P')
+                    array[i, j] = data[j].ToString();
+                    if (data[j].ToString() == "P")
                     {
-                        playerRow = row;
-                        playerCol = col;
+                        playerRow = i;
+                        playerCol = j;
                     }
                 }
             }
-
-            char[] directions = Console.ReadLine().ToCharArray();
-            bool isWon = false;
+            string command = Console.ReadLine();
             bool isDead = false;
-
-            foreach (char direction in directions)
+            bool isWon = false;
+            for (int i = 0; i < command.Length; i++)
             {
-                int newPlayerRow = playerRow;
-                int newPlayerCol = playerCol;
-
-                if (direction == 'L')
+                string currentCommand = command[i].ToString();
+                if (currentCommand == "L" && IsInside(playerRow, playerCol - 1, array.GetLength(0), array.GetLength(1)))
                 {
-                    newPlayerCol--;
-                }
-                else if (direction == 'R')
-                {
-                    newPlayerCol++;
-                }
-                else if (direction == 'U')
-                {
-                    newPlayerRow--;
-                }
-                else if (direction == 'D')
-                {
-                    newPlayerRow++;
-                }
-
-                if (!isValid(newPlayerRow, newPlayerCol, n, m))
-                {
-                    isWon = true;
-                    field[playerRow, playerCol] = '.';
-                    List<int[]> bunniesCoordinates = GetBunniesCoordinates(field);
-                    SpreadBunnies(bunniesCoordinates, field);
-                }
-                else if (field[newPlayerRow, newPlayerCol] == '.')
-                {
-                    field[playerRow, playerCol] = '.';
-                    field[newPlayerRow, newPlayerCol] = 'P';
-                    playerRow = newPlayerRow;
-                    playerCol = newPlayerCol;
-                    List<int[]> bunniesCoordinates = GetBunniesCoordinates(field);
-                    SpreadBunnies(bunniesCoordinates, field);
-                    if (field[playerRow, playerCol] == 'B')
+                    if (array[playerRow, playerCol - 1] == "B")
                     {
                         isDead = true;
                     }
-                }
-                else if (field[newPlayerRow, newPlayerCol] == 'B')
-                {
-                    isDead = true;
-                    field[playerRow, playerCol] = '.';
-                    playerRow = newPlayerRow;
-                    playerCol = newPlayerCol;
-                    List<int[]> bunniesCoordinates = GetBunniesCoordinates(field);
-                    SpreadBunnies(bunniesCoordinates, field);
-                }
-
-                if (isWon || isDead)
-                {
-                    break;
-                }
-
-                PrintField(field);
-
-                string result = "";
-                if (isWon)
-                {
-                    result += "won";
-                }
-                else
-                {
-                    result += "dead";
-                }
-                Console.WriteLine($"{result}: {playerRow}{playerCol}");
-            }
-
-        }
-        private static void PrintField(char[,] field)
-        {
-            for (int row = 0; row < field.GetLength(0); row++)
-            {
-                for (int col = 0; col < field.GetLength(1); col++)
-                {
-                    Console.Write(field[row, col]);
-                }
-                Console.WriteLine();
-            }
-        }
-        private static void SpreadBunnies(List<int[]> bunniesCoordinates, char[,] field)
-        {
-            int rowsLength = field.GetLength(0);
-            int colsLength = field.GetLength(1);
-
-            foreach (int[] item in bunniesCoordinates)
-            {
-                int row = item[0];
-                int col = item[1];
-
-                if (isValid(row - 1, col, rowsLength, colsLength))
-                {
-                    field[row - 1, col] = 'B';
-                }
-                if (isValid(row + 1, col, rowsLength, colsLength))
-                {
-                    field[row + 1, col] = 'B';
-                }
-                if (isValid(row, col - 1, rowsLength, colsLength))
-                {
-                    field[row, col - 1] = 'B';
-                }
-                if (isValid(row, col + 1, rowsLength, colsLength))
-                {
-                    field[row, col + 1] = 'B';
-                }
-            }
-        }
-        private static List<int[]> GetBunniesCoordinates(char[,] field)
-        {
-            List<int[]> bunniesCoordinates = new List<int[]>();
-            for (int row = 0; row < field.GetLength(0); row++)
-            {
-                for (int col = 0; col < field.GetLongLength(1); col++)
-                {
-                    if (field[row, col] == 'B')
+                    else
                     {
-                        bunniesCoordinates.Add(new int[] { row, col });
+                        array[playerRow, playerCol] = ".";
+                        array[playerRow, playerCol - 1] = "P";
+                    }
+                    playerCol--;
+                }
+                else if (currentCommand == "L" && !IsInside(playerRow, playerCol - 1, array.GetLength(0), array.GetLength(1)))
+                {
+                    isWon = true;
+                    array[playerRow, playerCol] = ".";
+
+                }
+                if (currentCommand == "R" && IsInside(playerRow, playerCol + 1, array.GetLength(0), array.GetLength(1)))
+                {
+                    if (array[playerRow, playerCol + 1] == "B")
+                    {
+                        isDead = true;
+                    }
+                    else
+                    {
+                        array[playerRow, playerCol] = ".";
+                        array[playerRow, playerCol + 1] = "P";
+                    }
+                    playerCol++;
+                }
+                else if (currentCommand == "R" && !IsInside(playerRow, playerCol + 1, array.GetLength(0), array.GetLength(1)))
+                {
+                    isWon = true;
+                    array[playerRow, playerCol] = ".";
+                    playerCol++;
+                }
+                if (currentCommand == "U" && IsInside(playerRow - 1, playerCol, array.GetLength(0), array.GetLength(1)))
+                {
+                    if (array[playerRow - 1, playerCol] == "B")
+                    {
+                        isDead = true;
+                    }
+                    else
+                    {
+                        array[playerRow, playerCol] = ".";
+                        array[playerRow - 1, playerCol] = "P";
+                    }
+                    playerRow--;
+                }
+                else if (currentCommand == "U" && !IsInside(playerRow - 1, playerCol, array.GetLength(0), array.GetLength(1)))
+                {
+                    isWon = true;
+                    array[playerRow, playerCol] = ".";
+                    playerRow--;
+                }
+                if (currentCommand == "D" && IsInside(playerRow + 1, playerCol, array.GetLength(0), array.GetLength(1)))
+                {
+                    if (array[playerRow + 1, playerCol] == "B")
+                    {
+                        isDead = true;
+                    }
+                    else
+                    {
+                        array[playerRow, playerCol] = ".";
+                        array[playerRow + 1, playerCol] = "P";
+                    }
+                    playerRow++;
+                }
+                else if (currentCommand == "D" && !IsInside(playerRow + 1, playerCol, array.GetLength(0), array.GetLength(1)))
+                {
+                    isWon = true;
+                    array[playerRow, playerCol] = ".";
+                    playerRow++;
+                }
+                for (int j = 0; j < array.GetLength(0); j++)
+                {
+                    for (int k = 0; k < array.GetLength(1); k++)
+                    {
+                        if (array[j, k] == "B")
+                        {
+                            if (IsInside(j - 1, k, row, col))
+                            {
+                                if (array[j - 1, k] == "P")
+                                {
+                                    isDead = true;
+                                }
+                                array[j - 1, k] = "b";
+                            }
+                            if (IsInside(j, k + 1, row, col))
+                            {
+                                if (array[j, k + 1] == "P")
+                                {
+                                    isDead = true;
+                                }
+                                array[j, k + 1] = "b";
+                            }
+                            if (IsInside(j + 1, k, row, col))
+                            {
+                                if (array[j + 1, k] == "P")
+                                {
+                                    isDead = true;
+                                }
+                                array[j + 1, k] = "b";
+                            }
+                            if (IsInside(j, k - 1, row, col))
+                            {
+                                if (array[j, k - 1] == "P")
+                                {
+                                    isDead = true;
+                                }
+                                array[j, k - 1] = "b";
+                            }
+                        }
                     }
                 }
+                for (int l = 0; l < array.GetLength(0); l++)
+                {
+                    for (int m = 0; m < array.GetLength(1); m++)
+                    {
+                        if (array[l, m] == "b")
+                        {
+                            array[l, m] = "B";
+                        }
+                    }
+                }
+                if (isDead)
+                {
+                    PrintMatrix(array);
+                    Console.WriteLine($"dead: {playerRow} {playerCol}");
+                    Environment.Exit(0);
+                }
+                else if (isWon)
+                {
+
+                    PrintMatrix(array);
+                    Console.WriteLine($"won: {playerRow} {playerCol}");
+                    Environment.Exit(0);
+
+                }
+
             }
-            return bunniesCoordinates;
         }
 
-        private static bool isValid(int row, int col, int n, int m)
+        static bool IsInside(int row, int col, int matrixRow, int matrrixCol)
         {
-            return row >= 0 && col >= 0 && row < n && col < m;
+            if (row >= 0 && row < matrixRow && col >= 0 && col < matrrixCol)
+            {
+                return true;
+            }
+            return false;
+        }
+
+        static void PrintMatrix(string[,] matrix)
+        {
+            for (int i = 0; i < matrix.GetLength(0); i++)
+            {
+                for (int j = 0; j < matrix.GetLength(1); j++)
+                {
+                    Console.Write(matrix[i, j]);
+                }
+                Console.WriteLine();
+
+            }
         }
     }
 }
